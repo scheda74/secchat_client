@@ -47,12 +47,12 @@ export default class App extends React.Component {
   handleClick() {
     var encrypted = crypt.encrypt(publicKey, this.state.enc);
     var decrypted = crypt.decrypt(privateKey, encrypted);
+    var cipher = encrypted.split("\"");
     this.setState({
-      enc: encrypted.cipher,
+      enc: cipher[cipher.length - 2],
       dec: decrypted.message
     });
-    console.log(JSON.stringify(encrypted));
-    //console.log(this.state.text.value);
+    //console.log(JSON.stringify(encrypted));
   }
 
   render() {
