@@ -51,7 +51,7 @@ export default class App extends React.Component {
       enc: encrypted.cipher,
       dec: decrypted.message
     });
-    console.log(encrypted.cipher);
+    console.log(JSON.stringify(encrypted));
     //console.log(this.state.text.value);
   }
 
