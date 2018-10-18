@@ -1,7 +1,7 @@
 var forge = require('node-forge');
 var rsa_keypair = require('./keys/key.json');
 
-function encryptMsg(msg) {
+export function encryptMsg(msg) {
     // initialize RSA object with public key
     var public_key_rsa = forge.pki.publicKeyFromPem(rsa_keypair.pub);
     //var encrypted = public_key_rsa.encrypt(bytes, 'RSA-OAEP');
@@ -50,7 +50,7 @@ function encryptAES(iv, aes_key, msg) {
 
 // ################## decryption functions #######################
 
-function decryptMsg(data) {
+export function decryptMsg(data) {
     var private_key_rsa = forge.pki.privateKeyFromPem(rsa_keypair.priv);
     var decrypted_keys = private_key_rsa.decrypt(data.keys, 'RSA-OAEP');
 
@@ -70,16 +70,14 @@ function decryptMsg(data) {
     var plaintext = decryptAES(aes_key, data.cipher);
     
     
-    
-    
-    
-    
+
     
     
     // console.log("hmac: " + hmac_key);
     // console.log("hmac: " + hmac_key);
     console.log(plaintext.substring(0, plaintext.length - 1));
     // console.log("hmac: " + hmac_key);
+    return plaintext.substring(0, plaintext.length - 1);
 }
 
 function decryptAES(aes_key, aes_ciphertext) {
