@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput, AppRegistry } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
 
-const enc = require('./enc');
+const crypt = require('./crypt');
 
 
 
@@ -24,8 +24,8 @@ export default class App extends React.Component {
   }
 
   handleClick() {
-    var encrypted = enc.encryptMsg(this.state.enc);
-    var decrypted = enc.decryptMsg(encrypted);
+    var encrypted = crypt.encryptMsg(this.state.enc);
+    var decrypted = crypt.decryptMsg(encrypted);
 
     var cipher = encrypted.cipher;
     this.setState({
