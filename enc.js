@@ -68,8 +68,17 @@ function decryptMsg(data) {
     //console.log("aes key: " + aes_key + " this is our key");
 
     var plaintext = decryptAES(aes_key, data.cipher);
-    console.log(plaintext);
-
+    
+    
+    
+    
+    
+    
+    
+    
+    // console.log("hmac: " + hmac_key);
+    // console.log("hmac: " + hmac_key);
+    console.log(plaintext.substring(0, plaintext.length - 1));
     // console.log("hmac: " + hmac_key);
 }
 
@@ -88,7 +97,7 @@ function decryptAES(aes_key, aes_ciphertext) {
     return decipher.output.data;
 }
 
-
-
-var data = encryptMsg("Hello World");
+var msg = "Hello World";
+console.log("Encrypting message: " + msg);
+var data = encryptMsg(msg);
 decryptMsg(data);
