@@ -1,13 +1,88 @@
-var RSA = require('hybrid-crypto-js').RSA;
-var Crypt = require('hybrid-crypto-js').Crypt;
+var forge = require('node-forge');
+var rsa_keypair = require('./keys/key.json');
 
-var rsa = new RSA();
-rsa.generateKeypair(function(keypair) {
- 
-    // Callback function receives new keypair as a first argument
-    console.log("this is working..");
-    var publicKey = keypair.publicKey;
-    var privateKey = keypair.privateKey;
-    console.log(publicKey);
-    console.log(privateKey);
-  });
+function encryptMsg(msg) {
+    // initialize RSA object with public key
+    var public_key_rsa = forge.pki.publicKeyFromPem(rsa_keypair.pub);
+    //var encrypted = public_key_rsa.encrypt(bytes, 'RSA-OAEP');
+
+    // generate AES key and IV
+    var aes_key = forge.random.getBytesSync(32);
+    var hmac_key = forge.random.getBytesSync(32);
+    var iv = forge.random.getBytesSync(16);
+
+    var aes_ciphertext = encryptAES(iv, aes_key, msg);
+    var tag = encryptHMAC(hmac_key, aes_ciphertext);
+    
+    final_key = aes_key + hmac_key;
+    var encrypted_key = public_key_rsa.encrypt(final_key, 'RSA-OAEP');
+
+    var data = {
+        "keys" : encrypted_key,
+        "cipher" : aes_ciphertext,
+        "tag" : tag
+    }
+    console.log("original hmac key: " + hmac_key);
+    
+    return data;
+
+
+
+
+    //aes_plaintext = decryptAES(aes_key, aes_ciphertext);
+}
+
+
+function encryptHMAC(hmac_key, aes_ciphertext) {
+    var hmac = forge.hmac.create();
+    hmac.start('sha256', hmac_key);
+    hmac.update(aes_ciphertext);
+    // console.log("hmac tag:  " + hmac.digest().data);
+    return hmac.digest().data;
+}
+
+function encryptAES(iv, aes_key, msg) {
+    // encrypt some bytes
+    var cipher = forge.cipher.createCipher('AES-CBC', aes_key);
+    cipher.start({iv: iv});
+    cipher.update(forge.util.createBuffer(msg));
+    cipher.finish();
+    var encrypted = cipher.output;
+    var ciphertext = iv + encrypted.data;
+    // outputs encrypted hex
+    // console.log("iv and cipher: \n" + ciphertext);
+    return ciphertext;
+}
+
+
+// ################## decryption functions #######################
+
+function decryptMsg(data) {
+    var private_key_rsa = forge.pki.privateKeyFromPem(rsa_keypair.priv);
+    var decrypted_keys = private_key_rsa.decrypt(data.keys, 'RSA-OAEP');
+
+    var aes_key = decrypted_keys.slice(0, 31);
+    var hmac_key = decrypted_keys.slice(32);
+
+    console.log("aes: " + aes_key + "\n" + "hmac: " + hmac_key);
+}
+
+function decryptAES(aes_key, aes_ciphertext) {
+    var iv = aes_ciphertext.slice(0, 15);
+    console.log("iv in decryption: " + iv);
+    console.log("cipher in decryption: " + aes_ciphertext.slice(16));
+    var encrypted = forge.util.createBuffer(aes_ciphertext.slice(16));
+
+    var decipher = forge.cipher.createDecipher('AES-CBC', aes_key);
+    decipher.start({iv: iv});
+    decipher.update(encrypted);
+    var result = decipher.finish(); // check 'result' for true/false
+    // outputs decrypted hex
+    console.log("decrypted plaintext: " + decipher.output.data);
+    return decipher.output.data;
+}
+
+
+
+var data = encryptMsg("Hello World");
+decryptMsg(data);
