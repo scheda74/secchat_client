@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, TextInput, AppRegistry } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage } from 'react-native-elements';
+import Login from './src/screens/login';
+import Secured from './src/screens/secured';
 
 const crypt = require('./crypt');
 
@@ -11,6 +13,10 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { msg: '', enc: '', dec: '' };
+  }
+
+  userState = {
+    isLoggedIn: false
   }
   
   
@@ -24,7 +30,7 @@ export default class App extends React.Component {
   }
 
   handleClick() {
-    var encrypted = crypt.encryptMsg(this.state.enc);
+    var encrypted = crypt.encryptMsg(this.state.msg);
     var decrypted = crypt.decryptMsg(encrypted);
 
     var cipher = encrypted.cipher;
@@ -37,24 +43,34 @@ export default class App extends React.Component {
   }
 
   render() {
-    return (
-      <View style={styles.container}>
-        <Text>This is SecChat which doesn't work!</Text>
-        <Text>Message: {this.state.enc} </Text>
-        <Text>Decrypted: {this.state.dec} </Text>
-        <TextInput
-            placeholder="Type your message here..."
-            style={{height: 40, width: 150, borderColor: 'gray', borderWidth: 1}}
-            onChangeText={(text) => this.updateValue(text)}
-            value={this.state.msg}
-        />
-        <View style={styles.form}>
-          <Button title="Encrypt" onPress={this.handleClick.bind(this)}/>
-        </View>
-      </View>
-    );
-  }
+    // return (
+    //   <View style={styles.container}>
+    //     <Text>This is SecChat which doesn't work!</Text>
+    //     <Text>Message: {this.state.enc} </Text>
+    //     <Text>Decrypted: {this.state.dec} </Text>
+    //     <TextInput
+    //         placeholder="Type your message here..."
+    //         style={{height: 40, width: 150, borderColor: 'gray', borderWidth: 1}}
+    //         onChangeText={(text) => this.updateValue(text)}
+    //         value={this.state.msg}
+    //     />
+    //     <View style={styles.form}>
+    //       <Button title="Encrypt" onPress={this.handleClick.bind(this)}/>
+    //     </View>
+    //   </View>
+    // );
+    if (this.state.isLoggedIn) 
+      return <Secured 
+          onLogoutPress={() => this.setState({isLoggedIn: false})}
+        />;
+    else 
+      return <Login 
+          onLoginPress={() => this.setState({isLoggedIn: true})}
+        />;
+  };
 };
+
+AppRegistry.registerComponent(App , () => App );
 
 
 const styles = StyleSheet.create({

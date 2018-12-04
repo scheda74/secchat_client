@@ -1,15 +1,20 @@
 var forge = require('node-forge');
 var rsa_keypair = require('./keys/key.json');
 
+
+// Credit: https://github.com/digitalbazaar/forge/blob/master/README.md
+
 export function encryptMsg(msg) {
     // initialize RSA object with public key
     var public_key_rsa = forge.pki.publicKeyFromPem(rsa_keypair.pub);
+    msg = forge.util.encodeUtf8(msg);
     //var encrypted = public_key_rsa.encrypt(bytes, 'RSA-OAEP');
 
     // generate AES key and IV
     var aes_key = forge.random.getBytesSync(32);
     var hmac_key = forge.random.getBytesSync(32);
     var iv = forge.random.getBytesSync(16);
+
 
     var aes_ciphertext = encryptAES(iv, aes_key, msg);
     var tag = runHMAC(hmac_key, aes_ciphertext);
@@ -36,6 +41,7 @@ function runHMAC(hmac_key, aes_ciphertext) {
 
 function encryptAES(iv, aes_key, msg) {
     // encrypt some bytes
+    // Note: CBC and ECB modes use PKCS#7 padding as default
     var cipher = forge.cipher.createCipher('AES-CBC', aes_key);
     cipher.start({iv: iv});
     cipher.update(forge.util.createBuffer(msg));
@@ -95,7 +101,7 @@ function decryptAES(aes_key, aes_ciphertext) {
     return decipher.output.data;
 }
 
-var msg = "Hello World";
-console.log("Encrypting message: " + msg);
-var data = encryptMsg(msg);
-decryptMsg(data);
+// var msg = "Hello World";
+// console.log("Encrypting message: " + msg);
+// var data = encryptMsg(msg);
+// decryptMsg(data);
