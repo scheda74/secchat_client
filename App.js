@@ -104,7 +104,6 @@ export default AppContainer;
 //   };
 // };
 
-// AppRegistry.registerComponent(App , () => App );
 
 
 const styles = StyleSheet.create({
