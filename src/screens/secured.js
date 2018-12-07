@@ -13,35 +13,30 @@ export default class Secured extends React.Component {
     constructor(props) {
         super(props);
         this.state = { msg_enc: '', msg_dec: '', sender: '', receiver: '', token: '' };
-
     }
 
-    _getMsg = () => {
+    _getMsg = (token) => {
+        //console.log(token);
         fetch(Environment.CLIENT_API+"/chats", {
             method: "POST",
             headers: {
-                'x-access-token': this.token
-            },
-            body: formBody
+                'Authorization': token
+            }
         })
-        .then((response) => response.json())
+        .then((response) => {
+            console.log(response.json());
+            response.json();
+        })
         .then((response) => {
             if (response.success==true) {
                 proceed = true;
-                this.setState({ token: response.token });
-                // console.log(response.token);
+                this.setState({ msg_enc: response.enc });
+                console.log(response.enc);
             }
-            else this.setState({ message: response.message });
-        })
-        .then(() => {
-            this.setState({ isLoggingIn: false })
-            if (proceed) this.props.navigation.navigate('Main', {
-                token: this.state.token
-            });
+            else this.setState({ msg_enc: response.message });
         })
         .catch(err => {
-            this.setState({ message: err.message });
-            this.setState({ isLoggingIn: false })
+            this.setState({ msg_enc: err.message });
         });
     }
     
@@ -60,7 +55,16 @@ export default class Secured extends React.Component {
                     {token}
                 </Text>
 				<View style={{margin:20}} />
-            
+                <Button 
+                    onPress={() => this._getMsg(token)}
+                    title="Get chats"
+                />
+                {!!this.state.msg_enc && (
+					<Text
+						style={{fontSize: 14, color: 'red', padding: 5}}>
+						{this.state.msg_enc}
+					</Text>
+				)}
 				<Button
 		            onPress={() => {
                         this.setState({isLoggedIn: false});
