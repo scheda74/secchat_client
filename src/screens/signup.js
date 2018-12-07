@@ -11,9 +11,8 @@ import {
 } from 'react-native';
 
 import Environment from '../config/environment';
-import SignUp from './signup';
 
-export default class Login extends Component {
+export default class SignUp extends React.Component {
 
     constructor(props) {
         super(props);
@@ -96,7 +95,7 @@ export default class Login extends Component {
             <ScrollView style={{padding: 20}}>
 				<Text 
 					style={{fontSize: 27}}>
-					Login
+					Sign Up
 				</Text>
                 <TextInput
 					ref={component => this._username = component}

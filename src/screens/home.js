@@ -7,7 +7,7 @@ import Login from './login';
 import Secured from './secured';
 import SignUp from './signup';
 
-const crypt = require('../../crypt');
+const crypt = require('../crypt');
 
 
 export default class Home extends React.Component {

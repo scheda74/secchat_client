@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 
 import Environment from '../config/environment';
-import SignUp from './signup';
 
 export default class Login extends React.Component {
 
