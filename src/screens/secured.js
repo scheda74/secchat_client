@@ -5,16 +5,17 @@ import {
 	View,
     Button,
     FlatList,
-    StyleSheet
+    StyleSheet,
+    ActivityIndicator
 } from 'react-native';
-import { ListItem } from 'react-native-elements';
+import { ListItem, List, SearchBar } from 'react-native-elements';
 
 
 export default class Secured extends React.Component {
     
     constructor(props) {
         super(props);
-        this.state = { user: '', availableUsers: null, msg_enc: '', msg_dec: '', sender: '', receiver: '', token: '' };
+        this.state = { loading: false, user: '', availableUsers: [], msg_enc: '', msg_dec: '', sender: '', receiver: '', token: '' };
     }
 
     _getMsg = (token) => {
@@ -27,15 +28,16 @@ export default class Secured extends React.Component {
         })
         .then((response) => response.json())
         .then((response) => {
+            this.setState({ loading: true })
             if (response.success==true) {
                 proceed = true;
-                this.setState({ msg_enc: response.msg_enc });
-                for(val in response.msg_enc) console.log(val);
+                this.setState({ loading: false, msg_enc: response.msg_enc });
+                //for(val in response.msg_enc) console.log(val);
             }
-            else this.setState({ msg_enc: response.msg_enc });
+            else this.setState({ msg_enc: response.msg_enc, loading: false });
         })
         .catch(err => {
-            this.setState({ msg_enc: err.message });
+            this.setState({ loading: false, msg_enc: err.message });
         });
     }
 
@@ -48,15 +50,16 @@ export default class Secured extends React.Component {
         })
         .then((response) => response.json())
         .then((response) => {
+            this.setState({ loading: true })
             if (response.success==true) {
                 proceed = true;
-                this.setState({ availableUsers: response.available });
-                //console.log(response.available);
+                this.setState({ loading: false, availableUsers: response.available });
+                // console.log(this.state.availableUsers);
             }
-            else this.setState({ msg_enc: response.msg_enc });
+            else this.setState({ loading: false, msg_enc: response.msg_enc });
         })
         .catch(err => {
-            this.setState({ msg_enc: err.message });
+            this.setState({ loading: false, msg_enc: err.message });
         });    
     }
 
@@ -83,19 +86,36 @@ export default class Secured extends React.Component {
             this.setState({ msg_enc: err.message });
         });
     }
+
+    renderHeader = () => {
+        return <SearchBar placeholder="Type Here..." lightTheme round />;
+    };
+
+    renderSeparator = () => {
+        return (
+          <View
+            style={{
+              height: 1,
+              width: "86%",
+              backgroundColor: "#CED0CE",
+              marginLeft: "14%"
+            }}
+          />
+        );
+      };
+
     componentDidMount() {
         const { navigation } = this.props;
         const token = navigation.getParam('token', 'NO-TOKEN');
         const user = navigation.getParam('user', 'NO-USER');
-        this.setState({user: user, token: token})
+        this.setState({user: user, token: token});
         this._getAvailableUsers(token);
+        //this._getAvailableUsers(token);
         //console.log(this.state.availableUsers);
     }
     
 	render() { 
-        
-        //this._getAvailableUsers(token);
-        // console.log(user);
+        //console.log(this.state.availableUsers);
         //this.setState({token: token});
 		return (
 			<ScrollView style={{padding: 20}}>
@@ -118,14 +138,19 @@ export default class Secured extends React.Component {
 						{this.state.msg_enc}
 					</Text>
                 )}
-                <View style={styles.container}>
+                <View>
                     <FlatList
+                        ListEmptyComponent={() => this.state.loading ? <ActivityIndicator /> : null}
                         data={this.state.availableUsers}
                         renderItem={({ item }) => (
                             <ListItem
-                                title={`${item.username}`}
+                                roundAvatar
+                                title={item.username}
                                 subtitle={item.email}/>
                         )}
+                        keyExtractor={(item, index) => index.toString()}
+                        ListHeaderComponent={this.renderHeader}
+                        ItemSeparatorComponent={this.renderSeparator}
                     />
                 </View>
 				<Button
