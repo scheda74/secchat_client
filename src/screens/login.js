@@ -24,7 +24,8 @@ export default class Login extends React.Component {
         password: '',
         isLoggingIn: false,
         message: '',
-        token: ''
+        token: '',
+        user: null
     }
 
     _userLogin = () => {
@@ -57,7 +58,7 @@ export default class Login extends React.Component {
             .then((response) => {
                 if (response.success==true) {
                     proceed = true;
-                    this.setState({ token: response.token });
+                    this.setState({ token: response.token, user: response.user });
                     // console.log(response.token);
                 }
                 else this.setState({ message: response.message });
@@ -65,7 +66,8 @@ export default class Login extends React.Component {
             .then(() => {
                 this.setState({ isLoggingIn: false })
                 if (proceed) this.props.navigation.navigate('Main', {
-                    token: this.state.token
+                    token: this.state.token,
+                    user: this.state.user
                 });
             })
             .catch(err => {
