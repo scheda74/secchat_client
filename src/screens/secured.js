@@ -9,7 +9,7 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { ListItem, List, SearchBar } from 'react-native-elements';
-
+import Chat from './chat';
 
 export default class Secured extends React.Component {
     
@@ -18,28 +18,6 @@ export default class Secured extends React.Component {
         this.state = { loading: false, user: '', availableUsers: [], msg_enc: '', msg_dec: '', sender: '', receiver: '', token: '' };
     }
 
-    _getMsg = (token) => {
-        //console.log(token);
-        fetch(Environment.CLIENT_API+"/chats", {
-            method: "GET",
-            headers: {
-                'x-access-token': token
-            }
-        })
-        .then((response) => response.json())
-        .then((response) => {
-            this.setState({ loading: true })
-            if (response.success==true) {
-                proceed = true;
-                this.setState({ loading: false, msg_enc: response.msg_enc });
-                //for(val in response.msg_enc) console.log(val);
-            }
-            else this.setState({ msg_enc: response.msg_enc, loading: false });
-        })
-        .catch(err => {
-            this.setState({ loading: false, msg_enc: err.message });
-        });
-    }
 
     _getAvailableUsers = (token) => {
         fetch(Environment.CLIENT_API+"/chats/users", {
@@ -123,10 +101,6 @@ export default class Secured extends React.Component {
 					style={{fontSize: 27}}>
 					Welcome {this.state.user.username}
 				</Text>
-                <Text
-                    style={{fontSize: 27}}>
-                    {this.state.token}
-                </Text>
 				<View style={{margin:20}} />
                 <Button 
                     onPress={() => this._getMsg(this.state.token)}
@@ -146,7 +120,10 @@ export default class Secured extends React.Component {
                             <ListItem
                                 roundAvatar
                                 title={item.username}
-                                subtitle={item.email}/>
+                                subtitle={item.email}
+                                onPress={() => this.props.navigation.navigate('Chat', {
+                                    user: this.state.user, token: this.state.token, receiver: item
+                                })} />
                         )}
                         keyExtractor={(item, index) => index.toString()}
                         ListHeaderComponent={this.renderHeader}

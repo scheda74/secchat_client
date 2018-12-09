@@ -7,6 +7,7 @@ import {
     View,
     Button,
     Alert,
+    StyleSheet,
     ActivityIndicator
 } from 'react-native';
 
@@ -20,7 +21,7 @@ export default class Login extends React.Component {
     }
 
     state = {
-        username: '',
+        email: '',
         password: '',
         isLoggingIn: false,
         message: '',
@@ -33,7 +34,7 @@ export default class Login extends React.Component {
         this.setState({ isLoggingIn: true, message: '' });
 
         var params = {
-            email: this.state.username,
+            email: this.state.email,
             password: this.state.password,
             grant_type: 'password'
         };
@@ -76,8 +77,8 @@ export default class Login extends React.Component {
 			});
     }
 
-    clearUsername = () => {
-        this._username.setNativeProps({ text: '' });
+    clearEmail = () => {
+        this._email.setNativeProps({ text: '' });
         this.setState({ message: '' });
     }
 
@@ -88,18 +89,18 @@ export default class Login extends React.Component {
     
     render() { 
         return (
-            <ScrollView style={{padding: 20}}>
+            <ScrollView contentContainerStyle={styles.container}>
 				<Text 
 					style={{fontSize: 27}}>
 					Login
 				</Text>
 				<TextInput
-					ref={component => this._username = component}
-					placeholder='Username' 
-					onChangeText={(username) => this.setState({username})}
+					ref={component => this._email = component}
+					placeholder='Email' 
+					onChangeText={(email) => this.setState({email})}
                     autoFocus={true}
                     autoCapitalize="none"
-					onFocus={this.clearUsername}
+					onFocus={this.clearEmail}
 				/>
 				<TextInput 
 					ref={component => this._password = component}
@@ -118,8 +119,9 @@ export default class Login extends React.Component {
 				)}
 				{this.state.isLoggingIn && <ActivityIndicator />}
 				<View style={{margin:7}} />
-				<Button 
-					disabled={this.state.isLoggingIn||!this.state.username||!this.state.password}
+                <Button 
+                    style={styles.btn}
+					disabled={this.state.isLoggingIn||!this.state.email||!this.state.password}
 		      		onPress={this._userLogin}
 		      		title="Submit"
 		      	/>
@@ -131,3 +133,24 @@ export default class Login extends React.Component {
         )
     }
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    form: {
+      height: 40, 
+      width: 80, 
+      borderColor: 'gray', 
+      borderWidth: 1
+    },
+    btn: {
+      height: 40, 
+      width: 80,  
+      borderWidth: 1,
+      backgroundColor: 'skyblue'
+    }
+  });
