@@ -44,14 +44,15 @@ export default class Chat extends React.Component {
                 Object.keys(chat).map((key) => {
                     chat[key]['user'] = chat[key]['user'][0];
                     // console.log(chat[key]['data']);
-                    //console.log(crypt.decryptMsg(chat[key]['data'][0]));
+                    // console.log(crypt.decryptMsg(chat[key]['data'][0]));
                     chat[key]['text'] = crypt.decryptMsg(chat[key]['data'][0]);
                     // console.log(chat[key]['text']);
                });
-                //console.log(chat);
-                //this.setState({ loading: false, chat: chat, log: response.log });
+               var rev_chat = chat.sort((a, b) => {
+                   return Date.parse(a['createdAt']) - Date.parse(b['createdAt']);
+               });
                 this.setState(previousState => ({
-                    chat: GiftedChat.append([], chat),
+                    chat: GiftedChat.append([], rev_chat),
                 }));
             }
             else this.setState({ log: response.log, loading: false });
@@ -66,7 +67,7 @@ export default class Chat extends React.Component {
         var data = crypt.encryptMsg(messages[0].text);
         //console.log(data);
         // console.log(messages[0].text)
-        console.log('receiver: ' + this.state.receiver);
+        // console.log('receiver: ' + this.state.receiver);
         var params = {
             user: this.state.user,
             sender: this.state.user.email,
@@ -95,9 +96,8 @@ export default class Chat extends React.Component {
             .then((response) => response.json())
             .then((response) => {
                 if (response.success) {
-                    //this.setState({ chats: chat.push(send_msg) })
                     this.setState(previousState => ({
-                        chat: GiftedChat.append(previousState.chat, messages),
+                        chat: GiftedChat.prepend(previousState.chat, messages),
                     }))
                     // console.log('encrypted message sent! ' + data);
                 }
@@ -127,7 +127,7 @@ export default class Chat extends React.Component {
     render() {
         return(
             <GiftedChat
-                inverted={true}
+                inverted={false}
                 messages={this.state.chat}
                 onSend={messages => this.onSend(messages)}
                 user={{
