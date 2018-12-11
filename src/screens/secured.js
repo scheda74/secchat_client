@@ -119,10 +119,10 @@ export default class Secured extends React.Component {
                         renderItem={({ item }) => (
                             <ListItem
                                 roundAvatar
-                                title={item.username}
+                                title={item.name}
                                 subtitle={item.email}
                                 onPress={() => this.props.navigation.navigate('Chat', {
-                                    user: this.state.user, token: this.state.token, receiver: item
+                                    user: this.state.user, token: this.state.token, receiver: item.email
                                 })} />
                         )}
                         keyExtractor={(item, index) => index.toString()}

@@ -23,6 +23,7 @@ export function encryptMsg(msg) {
     var encrypted_key = public_key_rsa.encrypt(final_key, 'RSA-OAEP');
 
     var data = {
+        "iv" : iv,
         "keys" : encrypted_key,
         "cipher" : aes_ciphertext,
         "tag" : tag
@@ -47,7 +48,8 @@ function encryptAES(iv, aes_key, msg) {
     cipher.update(forge.util.createBuffer(msg));
     cipher.finish();
     var encrypted = cipher.output;
-    var ciphertext = iv + encrypted.data;
+    var ciphertext = encrypted.data;
+    console.log()
     // outputs encrypted hex
     // console.log("iv and cipher: \n" + ciphertext);
     return ciphertext;
@@ -57,9 +59,11 @@ function encryptAES(iv, aes_key, msg) {
 // ################## decryption functions #######################
 
 export function decryptMsg(data) {
+
     var private_key_rsa = forge.pki.privateKeyFromPem(rsa_keypair.priv);
     var decrypted_keys = private_key_rsa.decrypt(data.keys, 'RSA-OAEP');
 
+    var iv = data.iv;
     var aes_key = decrypted_keys.slice(0, 32);
     var hmac_key = decrypted_keys.slice(32);
 
@@ -72,25 +76,19 @@ export function decryptMsg(data) {
     }
     
     //console.log("aes key: " + aes_key + " this is our key");
-
-    var plaintext = decryptAES(aes_key, data.cipher);
-    
-    
-
-    
-    
+    var plaintext = decryptAES(iv, aes_key, data.cipher);
     // console.log("hmac: " + hmac_key);
     // console.log("hmac: " + hmac_key);
-    console.log(plaintext.substring(0, plaintext.length - 1));
+    // console.log(plaintext + '||| end of plaintext');
     // console.log("hmac: " + hmac_key);
-    return plaintext.substring(0, plaintext.length - 1);
+    return plaintext;
 }
 
-function decryptAES(aes_key, aes_ciphertext) {
-    var iv = aes_ciphertext.slice(0, 15);
+export function decryptAES(iv, aes_key, aes_ciphertext) {
+    // var iv = aes_ciphertext.slice(0, 15);
     // console.log("iv in decryption: " + iv);
     // console.log("cipher in decryption: " + aes_ciphertext.slice(16));
-    var encrypted = forge.util.createBuffer(aes_ciphertext.slice(16));
+    var encrypted = forge.util.createBuffer(aes_ciphertext);
 
     var decipher = forge.cipher.createDecipher('AES-CBC', aes_key);
     decipher.start({iv: iv});
@@ -101,7 +99,7 @@ function decryptAES(aes_key, aes_ciphertext) {
     return decipher.output.data;
 }
 
-// var msg = "Hello World";
+// var msg = "hey";
 // console.log("Encrypting message: " + msg);
 // var data = encryptMsg(msg);
 // decryptMsg(data);

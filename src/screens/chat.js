@@ -26,11 +26,12 @@ export default class Chat extends React.Component {
 
     
 
-    _getMsg(token) {
+    _getMsg(token, receiver) {
         fetch(Environment.CLIENT_API+"/chats", {
             method: "GET",
             headers: {
-                'x-access-token': token
+                'x-access-token': token,
+                'receiver': receiver
             }
         })
         .then((response) => response.json())
@@ -39,13 +40,14 @@ export default class Chat extends React.Component {
             this.setState({ loading: true })
             if (response.success) {
                 var chat = response.chat;
+                // console.log(chat);
                 Object.keys(chat).map((key) => {
                     chat[key]['user'] = chat[key]['user'][0];
                     // console.log(chat[key]['data']);
-                    if(chat[key]['data'][0] !== undefined) {
-                        chat[key]['text'] = crypt.decryptMsg(chat[key]['data'][0]);
-                    } 
-                });
+                    //console.log(crypt.decryptMsg(chat[key]['data'][0]));
+                    chat[key]['text'] = crypt.decryptMsg(chat[key]['data'][0]);
+                    // console.log(chat[key]['text']);
+               });
                 //console.log(chat);
                 //this.setState({ loading: false, chat: chat, log: response.log });
                 this.setState(previousState => ({
@@ -64,9 +66,12 @@ export default class Chat extends React.Component {
         var data = crypt.encryptMsg(messages[0].text);
         //console.log(data);
         // console.log(messages[0].text)
+        console.log('receiver: ' + this.state.receiver);
         var params = {
             user: this.state.user,
-            receiver: this.state.receiver.email,
+            sender: this.state.user.email,
+            receiver: this.state.receiver,
+            iv: data.iv,
             keys: data.keys,
             cipher: data.cipher,
             tag: data.tag
@@ -97,7 +102,7 @@ export default class Chat extends React.Component {
                     // console.log('encrypted message sent! ' + data);
                 }
                 else this.setState({ log: response.log });
-                //console.log('somethings wrong? ' + response.log);
+                // console.log('somethings wrong? ' + response.log);
             })
             .catch(err => {
 				this.setState({ loading: false, log: err.message });
@@ -108,9 +113,10 @@ export default class Chat extends React.Component {
         const { navigation } = this.props;
         const token = navigation.getParam('token', 'NO-TOKEN');
         const user = navigation.getParam('user', 'NO-USER');
-        const receiver = navigation.getParam('receiver', 'NO-RECEIVER')
+        const receiver = navigation.getParam('receiver', 'NO-RECEIVER');
+        //console.log(receiver);
         this.setState({user: user, receiver: receiver, token: token});
-        this._getMsg(token);
+        this._getMsg(token, receiver);
     }
 
 
@@ -121,6 +127,7 @@ export default class Chat extends React.Component {
     render() {
         return(
             <GiftedChat
+                inverted={true}
                 messages={this.state.chat}
                 onSend={messages => this.onSend(messages)}
                 user={{
