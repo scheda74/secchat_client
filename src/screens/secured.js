@@ -111,7 +111,6 @@ export default class Secured extends React.Component {
                                 <ListItem
                                 roundAvatar
                                 title={item.name}
-                                subtitle={item.email}
                                 onPress={() => this.props.navigation.navigate('Chat', {
                                     user: this.state.user, token: this.state.token, receiver: item.email
                                 })} /> : <View />
@@ -136,7 +135,7 @@ const Row = (user) => (
     <View style={styles.container}>
       {/* <Image source={{ uri: props.picture.large}} style={styles.photo} /> */}
       <Text style={styles.text}>
-        {`${user.username}`}
+        {`${user.name}`}
       </Text>
     </View>
   );
