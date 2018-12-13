@@ -22,6 +22,7 @@ export default class SignUp extends React.Component {
 
     state = {
         name: '',
+        user: null,
         password: '',
         isLoggingIn: false,
         message: '',
@@ -59,15 +60,16 @@ export default class SignUp extends React.Component {
             .then((response) => {
                 if (response.success==true) {
                     proceed = true;
-                    this.setState({ token: response.token });
+                    this.setState({ token: response.token, user: response.user });
                     // console.log(response.token);
                 }
-                else this.setState({ message: response.message });
+                else this.setState({ message: response.message, user: response.user });
             })
             .then(() => {
                 this.setState({ isLoggingIn: false })
                 if (proceed) this.props.navigation.navigate('Main', {
-                    token: this.state.token
+                    token: this.state.token,
+                    user: this.state.user
                 });
             })
             .catch(err => {
@@ -136,10 +138,6 @@ export default class SignUp extends React.Component {
 		      		onPress={this._userLogin}
 		      		title="Submit"
 		      	/>
-                <View>
-                    <Button title="Not signed up yet?"
-                            onPress={() => this.props.navigation.navigate('SignUp')}/>
-                </View>
 	      </ScrollView>
         )
     }

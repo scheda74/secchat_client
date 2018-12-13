@@ -99,31 +99,22 @@ export default class Secured extends React.Component {
 			<ScrollView style={{padding: 20}}>
 				<Text 
 					style={{fontSize: 27}}>
-					Welcome {this.state.user.username}
+					Welcome {this.state.user.name}
 				</Text>
 				<View style={{margin:20}} />
-                <Button 
-                    onPress={() => this._getMsg(this.state.token)}
-                    title="Get chats"
-                />
-                {!!this.state.msg_enc && (
-					<Text
-						style={{fontSize: 14, color: 'red', padding: 5}}>
-						{this.state.msg_enc}
-					</Text>
-                )}
                 <View>
                     <FlatList
                         ListEmptyComponent={() => this.state.loading ? <ActivityIndicator /> : null}
                         data={this.state.availableUsers}
                         renderItem={({ item }) => (
-                            <ListItem
+                            item._id !== this.state.user._id ?
+                                <ListItem
                                 roundAvatar
                                 title={item.name}
                                 subtitle={item.email}
                                 onPress={() => this.props.navigation.navigate('Chat', {
                                     user: this.state.user, token: this.state.token, receiver: item.email
-                                })} />
+                                })} /> : <View />
                         )}
                         keyExtractor={(item, index) => index.toString()}
                         ListHeaderComponent={this.renderHeader}
@@ -145,7 +136,7 @@ const Row = (user) => (
     <View style={styles.container}>
       {/* <Image source={{ uri: props.picture.large}} style={styles.photo} /> */}
       <Text style={styles.text}>
-        {`${user.username} ${user.email}`}
+        {`${user.username}`}
       </Text>
     </View>
   );
