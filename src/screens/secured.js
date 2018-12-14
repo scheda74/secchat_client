@@ -32,7 +32,6 @@ export default class Secured extends React.Component {
             if (response.success==true) {
                 proceed = true;
                 this.setState({ loading: false, availableUsers: response.available });
-                // console.log(this.state.availableUsers);
             }
             else this.setState({ loading: false, msg_enc: response.msg_enc });
         })
@@ -83,18 +82,15 @@ export default class Secured extends React.Component {
       };
 
     componentDidMount() {
+        // after components are loaded following variables are being initialized
         const { navigation } = this.props;
         const token = navigation.getParam('token', 'NO-TOKEN');
         const user = navigation.getParam('user', 'NO-USER');
         this.setState({user: user, token: token});
         this._getAvailableUsers(token);
-        //this._getAvailableUsers(token);
-        //console.log(this.state.availableUsers);
     }
     
 	render() { 
-        //console.log(this.state.availableUsers);
-        //this.setState({token: token});
 		return (
 			<ScrollView style={{padding: 20}}>
 				<Text 
