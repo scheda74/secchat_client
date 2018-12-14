@@ -71,8 +71,8 @@ export function decryptMsg(data) {
 }
 ```
 
-A JSON object is provided.
-```JSON
+A JSON object data is provided. It has the following attributes.
+```
 {
     iv: String,
     keys: String,
