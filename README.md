@@ -1,10 +1,6 @@
 # Client-Side Implementation of Secchat.Me
 > A end-to-end encrypted Messaging System
 
-
-<img src="./assets/chat_screenshot.png" height="300" width="150">
-
-
 ## Design
 ### Client Design
 
