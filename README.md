@@ -1,7 +1,7 @@
 # Client-Side Implementation of Secchat.Me
 > A end-to-end encrypted Messaging System
 
-![Chat](./assets/chat_screenshot.png?raw=true "How it looks")
+![Chat](./assets/chat_screenshot.png =400x200)
 
 
 ## Design
